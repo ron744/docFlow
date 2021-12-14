@@ -17,10 +17,10 @@ public class Document {
     private Long id;
     private String name;
     private Long workflowId;
-    private Enum<DocType> docType;
+    private DocType docType;
     private boolean isPrimary;
 
-    public Document(String name, Long workflowId, Enum<DocType> docType, boolean isPrimary) {
+    public Document(String name, Long workflowId, DocType docType, boolean isPrimary) {
         this.name = name;
         this.workflowId = workflowId;
         this.docType = docType;
