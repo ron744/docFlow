@@ -23,4 +23,5 @@ public class DocumentController {
     public Map<String, String> getDocumentCountByPriority() {
         return documentService.getDocumentCountByPriority();
     }
+
 }

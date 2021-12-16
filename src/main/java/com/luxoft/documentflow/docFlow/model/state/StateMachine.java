@@ -1,46 +1,57 @@
 package com.luxoft.documentflow.docFlow.model.state;
 
+import com.luxoft.documentflow.docFlow.model.DocType;
+import com.luxoft.documentflow.docFlow.model.WorkflowState;
 import lombok.Data;
 
-import java.util.List;
+import java.util.Collection;
 
 @Data
 public class StateMachine {
-    private State state;
-    private List<String> stateList;
+    private WorkflowState state;
 
-    public StateMachine(List<String> stateList) {
-        this.state = new NewState(this);
-        this.stateList = stateList;
+    public WorkflowState changeState(Collection<DocType> docTypeList, WorkflowState oldState) {
+        state = oldState;
 
-        for (int i = 0; i < stateList.size(); i++) {
-            if (stateList.get(i).equals("confirmation_of_receipt_of_the_primary_document_from_the_recipient")) {
+        boolean changeState = false;
+
+        do {
+            for (int i  = 0; i < docTypeList.size(); i++) {
+                if (docTypeList.contains(DocType.notification_of_receipt_of_the_notification_of_receipt_of_the_signature_from_the_sender) && state.equals(WorkflowState.SENDING_CONFIRMATION)) {
+
+                    state = WorkflowState.FINISHED;
+                    changeState = true;
+
+                } else if (docTypeList.contains(DocType.notification_of_receipt_of_the_signature_from_the_sender) && state.equals(WorkflowState.SIGNED)) {
+
+                    state = WorkflowState.SENDING_CONFIRMATION;
+                    changeState = true;
+
+                } else if (docTypeList.contains(DocType.signing_of_the_primary_document_from_the_recipient) && state.equals(WorkflowState.SENT)) {
+
+                    state = WorkflowState.SIGNED;
+                    changeState = true;
+
+                } else if (docTypeList.contains(DocType.notification_of_receipt_of_confirmation_of_receipt_of_the_primary_document) && state.equals(WorkflowState.WAITING_FOR_RECEIPT_CONFIRMATION)) {
+
+                    state = WorkflowState.SENT;
+                    changeState = true;
+
+                } else if (docTypeList.contains(DocType.confirmation_of_receipt_of_the_primary_document_from_the_recipient) && state.equals(WorkflowState.NEW)) {
+
+                    state = WorkflowState.WAITING_FOR_RECEIPT_CONFIRMATION;
+                    changeState = true;
+
+                }
 
             }
-        }
-    }
 
-    public void confirmation_of_receipt_of_the_primary_document_from_the_recipient() {
-        state.confirmation_of_receipt_of_the_primary_document_from_the_recipient();
-    }
 
-    public void notification_of_receipt_of_confirmation_of_receipt_of_the_primary_document() {
-        state.notification_of_receipt_of_confirmation_of_receipt_of_the_primary_document();
-    }
+            changeState = !changeState;
 
-    public void signing_of_the_primary_document_from_the_recipient() {
-        state.signing_of_the_primary_document_from_the_recipient();
-    }
+        } while (changeState);
 
-    public void notification_of_receipt_of_the_signature_from_the_sender() {
-        state.notification_of_receipt_of_the_signature_from_the_sender();
-    }
 
-    public void notification_of_receipt_of_the_notification_of_receipt_of_the_signature_from_the_sender() {
-        state.notification_of_receipt_of_the_notification_of_receipt_of_the_signature_from_the_sender();
-    }
-
-    public void changeState(State state) {
-        this.state = state;
+        return state;
     }
 }

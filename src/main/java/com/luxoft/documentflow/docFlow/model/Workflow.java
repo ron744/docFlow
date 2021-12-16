@@ -13,5 +13,5 @@ public class Workflow {
     @Id
     private Long id;
     private String name;
-    private WorkflowStatus workflowStatus;
+    private WorkflowState workflowState;
 }
