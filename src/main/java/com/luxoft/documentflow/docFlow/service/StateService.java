@@ -5,7 +5,6 @@ import com.luxoft.documentflow.docFlow.model.Document;
 import com.luxoft.documentflow.docFlow.model.Workflow;
 import com.luxoft.documentflow.docFlow.model.WorkflowState;
 import com.luxoft.documentflow.docFlow.model.state.StateMachine;
-import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,14 +13,15 @@ import java.util.*;
 
 @Service
 @Slf4j
-@NoArgsConstructor
 public class StateService {
 
-    private WorkflowServiceCrud serviceCrud;
+    private final WorkflowServiceCrud serviceCrud;
+    private final DocumentService documentService;
 
     @Autowired
-    public StateService(WorkflowServiceCrud serviceCrud) {
+    public StateService(WorkflowServiceCrud serviceCrud, DocumentService documentService) {
         this.serviceCrud = serviceCrud;
+        this.documentService = documentService;
     }
 
     public List<Workflow> processing(List<Document> documentList) {
@@ -57,6 +57,11 @@ public class StateService {
         }
 
         return result;
+    }
+
+    public List<Workflow> processingWithRandomDoc(int countId) {
+        List<Document> documentList = documentService.addRandomDocument(countId);
+        return processing(documentList);
     }
 
     public Workflow findWorkflowById(Long id) {

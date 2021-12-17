@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Map;
 
 @RestController
-@RequestMapping(value = "v1/api/document")
+@RequestMapping(value = "api/v1/document")
 public class DocumentController {
 
     private final DocumentService documentService;

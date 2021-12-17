@@ -23,7 +23,7 @@ public class DocumentService {
         return new HashMap<>();
     }
 
-    public List<Document> addRandomDocument() {
-        return new DocumentGenerator().generate();
+    public List<Document> addRandomDocument(int countId) {
+        return new DocumentGenerator().generate(countId);
     }
 }

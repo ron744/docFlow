@@ -8,11 +8,10 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class DocumentGenerator {
 
-    public List<Document> generate() {
-        int workflowId = 2;
+    public List<Document> generate(int workflowId) {
         List<Document> documents = new ArrayList<>();
 
-        for (int i = 0; i < workflowId; i++) {
+        for (int i = 1; i <= workflowId; i++) {
             Document primaryDocument = generatePrimaryDocument((long) i);
             int documentCount = ThreadLocalRandom.current().nextInt(1, 7);
 
@@ -29,14 +28,15 @@ public class DocumentGenerator {
     public Document generatePrimaryDocument(Long workflowId) {
         String name = new Random().toString();
 
-        return new Document(name, workflowId, null, true);
+        return new Document(workflowId, name, workflowId, null, true);
     }
 
     public Document generateDocument(Long workflowId) {
         String name = new Random().toString();
+        Long randomId = ThreadLocalRandom.current().nextLong(300, 200000);
         int docTypeNumber = ThreadLocalRandom.current().nextInt(0, DocType.values().length);
         DocType docType = DocType.values()[docTypeNumber];
 
-        return new Document(name, workflowId, docType, false);
+        return new Document(randomId, name, workflowId, docType, false);
     }
 }

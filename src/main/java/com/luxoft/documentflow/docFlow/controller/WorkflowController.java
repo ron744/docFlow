@@ -1,8 +1,6 @@
 package com.luxoft.documentflow.docFlow.controller;
 
-import com.luxoft.documentflow.docFlow.model.Document;
 import com.luxoft.documentflow.docFlow.model.Workflow;
-import com.luxoft.documentflow.docFlow.service.DocumentService;
 import com.luxoft.documentflow.docFlow.service.StateService;
 import com.luxoft.documentflow.docFlow.service.WorkflowServiceCrud;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,21 +12,24 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 @RestController
-@RequestMapping(value = "v1/api/workflow")
+@RequestMapping(value = "api/v1/workflow")
 public class WorkflowController {
 
     private final WorkflowServiceCrud workflowServiceCrud;
-    private final DocumentService documentService;
     private final StateService stateService;
 
     @Autowired
-    public WorkflowController(WorkflowServiceCrud workflowServiceCrud, DocumentService documentService, StateService stateService) {
+    public WorkflowController(WorkflowServiceCrud workflowServiceCrud, StateService stateService) {
         this.workflowServiceCrud = workflowServiceCrud;
-        this.documentService = documentService;
         this.stateService = stateService;
     }
 
-    @GetMapping(value = "/getAllByIds")
+    @GetMapping(value = "/test")
+    public String test() {
+        return "Success";
+    }
+
+    @PostMapping(value = "/getAllByIds")
     public ResponseEntity<Collection<Workflow>> getAllByIds(@RequestBody List<Long> ids) {
 
         Collection<Workflow> workflows = null;
@@ -43,15 +44,19 @@ public class WorkflowController {
         }
     }
 
+    @GetMapping(value = "/getById")
+    public ResponseEntity<Workflow> getById(@RequestParam Long id) {
+        return ResponseEntity.ok(workflowServiceCrud.findWorkflowById(id));
+    }
+
     @PostMapping(value = "/add")
     public ResponseEntity<Workflow> save(@RequestBody Workflow workflow) {
         return ResponseEntity.ok(workflowServiceCrud.add(workflow));
     }
 
     @GetMapping(value = "/addRandomDoc")
-    public ResponseEntity<List<Workflow>> addWorkflowWithStateFromDocuments() {
-        List<Document> documentList = documentService.addRandomDocument();
-        List<Workflow> workflowList = stateService.processing(documentList);
+    public ResponseEntity<List<Workflow>> addWorkflowWithStateFromDocuments(@RequestParam int countId) {
+        List<Workflow> workflowList = stateService.processingWithRandomDoc(countId);
 
         List<Workflow> workflowsWithState = (List<Workflow>) workflowServiceCrud.addAll(workflowList);
 

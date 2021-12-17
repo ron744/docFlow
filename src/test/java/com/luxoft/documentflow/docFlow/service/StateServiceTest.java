@@ -16,7 +16,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class StateServiceTest {
 
     private final WorkflowServiceCrud serviceCrud = Mockito.mock(WorkflowServiceCrud.class);
-    private final StateService stateService = new StateService(serviceCrud);
+    private final DocumentService documentService = Mockito.mock(DocumentService.class);
+    private final StateService stateService = new StateService(serviceCrud, documentService);
 
     @BeforeEach
     public void setUp() {
@@ -108,5 +109,21 @@ public class StateServiceTest {
         assertEquals("primaryDocument3", workflowList.get(1).getName());
         assertEquals(WorkflowState.WAITING_FOR_RECEIPT_CONFIRMATION, workflowList.get(0).getWorkflowState());
         assertEquals(WorkflowState.WAITING_FOR_RECEIPT_CONFIRMATION, workflowList.get(1).getWorkflowState());
+    }
+
+    @Test
+    public void processingWithRandomDoc() {
+        int countId = 2;
+        List<Document> documentList = new DocumentGenerator().generate(countId);
+
+        for (Document doc : documentList) {
+            System.out.println(doc.toString());
+        }
+
+        List<Workflow> workflowList = stateService.processing(documentList);
+
+        for (Workflow workflow : workflowList) {
+            System.out.println(workflow.toString());
+        }
     }
 }

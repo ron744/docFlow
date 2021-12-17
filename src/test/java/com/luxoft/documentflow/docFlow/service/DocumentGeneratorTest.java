@@ -9,7 +9,8 @@ public class DocumentGeneratorTest {
 
     @Test
     public void generateTest() {
-        Collection<Document> documentList = new DocumentGenerator().generate();
+        int countId = 2;
+        Collection<Document> documentList = new DocumentGenerator().generate(countId);
         for (Document doc : documentList) {
             System.out.println(doc.toString());
         }
