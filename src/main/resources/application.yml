@@ -12,3 +12,9 @@ spring:
     driverClassName: org.h2.Driver
     username: sa
     password:
+
+
+docmunet:
+  scheduler:
+    genetator:
+      workflowCount: 100
