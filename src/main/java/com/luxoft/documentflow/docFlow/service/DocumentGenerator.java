@@ -22,6 +22,12 @@ public class DocumentGenerator {
             documents.add(primaryDocument);
         }
 
+        for (Document document : documents) {
+            System.out.println(document.toString());
+        }
+
+        System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+
         return documents;
     }
 

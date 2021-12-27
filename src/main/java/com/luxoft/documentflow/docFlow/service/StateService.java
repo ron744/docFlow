@@ -28,6 +28,11 @@ public class StateService {
         Map<Long, Collection<DocType>> workflowDocumentTypesMap = new HashMap<>();
         Map<Long, Workflow> workflowMap = new HashMap<>();
 
+        for (Document document : documentList) {
+            System.out.println(document.toString());
+        }
+        System.out.println("-------------------------------");
+
         for (Document doc : documentList) {
             Long workflowId = doc.getWorkflowId();
 

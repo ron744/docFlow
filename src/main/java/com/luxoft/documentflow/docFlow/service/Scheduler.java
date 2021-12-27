@@ -2,12 +2,15 @@ package com.luxoft.documentflow.docFlow.service;
 
 import com.luxoft.documentflow.docFlow.model.Document;
 import com.luxoft.documentflow.docFlow.model.DocumentStack;
+import com.luxoft.documentflow.docFlow.model.Workflow;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Service;
 
 import java.util.*;
 import java.util.concurrent.ArrayBlockingQueue;
 
+@Service
 public class Scheduler {
 
     private final DocumentService documentService;
@@ -15,7 +18,7 @@ public class Scheduler {
     private final WorkflowServiceCrud workflowServiceCrud;
     private final StateService stateService;
 
-    private final ArrayBlockingQueue<Document> documents = new ArrayBlockingQueue<>(200);
+    private final ArrayBlockingQueue<Document> documents = new ArrayBlockingQueue<>(20000);
 //    private Map<Long, List<Document>> documentByWorkflowId = new ConcurrentHashMap<>();
     private List<DocumentStack> documentByWorkflowId = new LinkedList<>();
 
@@ -36,8 +39,15 @@ public class Scheduler {
                         if (documentByWorkflowId.size() > 1) {
 
                             synchronized (monitor2) {
-                                stateService.processing(documentByWorkflowId.get(0).getDocuments());
+                                List<Workflow> workflowList = stateService.processing(documentByWorkflowId.get(0).getDocuments());
+
+                                for (Workflow workflow : workflowList) {
+                                    System.out.println(workflow.toString());
+                                }
+
                                 documentByWorkflowId.remove(0);
+
+                                workflowServiceCrud.addAll(workflowList);
                             }
 
                         }
@@ -97,20 +107,14 @@ public class Scheduler {
                 documentByWorkflowId.add(new DocumentStack(workflowId, documentList));
             }
 
-//            if (documentByWorkflowId.containsKey(workflowId)) {
-//                documentList = documentByWorkflowId.get(workflowId);
-//            }
-//            documentList.add(doc);
-//            documentByWorkflowId.put(workflowId, documentList);
-
         }
     }
 
 
 
-    @Scheduled
+    @Scheduled(fixedDelay = 30000)
     public void generateRandomDocument() {
-        int countId = 100;
+        int countId = 3;
         List<Document> documentList = documentService.addRandomDocument(countId);
         documents.addAll(documentList);
     }

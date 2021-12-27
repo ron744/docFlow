@@ -1,6 +1,7 @@
 package com.luxoft.documentflow.docFlow.controller;
 
 import com.luxoft.documentflow.docFlow.model.Workflow;
+import com.luxoft.documentflow.docFlow.service.Scheduler;
 import com.luxoft.documentflow.docFlow.service.StateService;
 import com.luxoft.documentflow.docFlow.service.WorkflowServiceCrud;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,11 +18,13 @@ public class WorkflowController {
 
     private final WorkflowServiceCrud workflowServiceCrud;
     private final StateService stateService;
+    private final Scheduler scheduler;
 
     @Autowired
-    public WorkflowController(WorkflowServiceCrud workflowServiceCrud, StateService stateService) {
+    public WorkflowController(WorkflowServiceCrud workflowServiceCrud, StateService stateService, Scheduler scheduler) {
         this.workflowServiceCrud = workflowServiceCrud;
         this.stateService = stateService;
+        this.scheduler = scheduler;
     }
 
     @GetMapping(value = "/test")
