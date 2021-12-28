@@ -3,8 +3,9 @@ package com.luxoft.documentflow.docFlow.service;
 import com.luxoft.documentflow.docFlow.model.Document;
 import com.luxoft.documentflow.docFlow.repository.DocumentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+
+import java.util.NoSuchElementException;
 
 @Service
 public class DocumentServiceCrud {
@@ -16,12 +17,11 @@ public class DocumentServiceCrud {
         this.documentRepository = documentRepository;
     }
 
-    public ResponseEntity<Document> add(Document document) {
-        return ResponseEntity.ok(documentRepository.save(document));
+    public Document add(Document document) {
+        return documentRepository.save(document);
     }
 
-    public ResponseEntity<Document> getById(Long id) {
-        Document document = documentRepository.findById(id).orElseThrow(NoSuchFieldError::new);
-        return ResponseEntity.ok(document);
+    public Document getById(Long id) {
+        return documentRepository.findById(id).orElseThrow(NoSuchElementException::new);
     }
 }

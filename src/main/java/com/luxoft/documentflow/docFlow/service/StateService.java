@@ -31,7 +31,7 @@ public class StateService {
         for (Document document : documentList) {
             System.out.println(document.toString());
         }
-        System.out.println("-------------------------------");
+        System.out.println("----------part of documents----------");
 
         for (Document doc : documentList) {
             Long workflowId = doc.getWorkflowId();

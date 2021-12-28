@@ -13,7 +13,6 @@ import javax.persistence.*;
 @NoArgsConstructor
 public class Workflow {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     private String name;
     private WorkflowState workflowState;

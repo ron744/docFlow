@@ -26,7 +26,7 @@ public class DocumentGenerator {
             System.out.println(document.toString());
         }
 
-        System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        System.out.println("----------document generation is finished----------");
 
         return documents;
     }

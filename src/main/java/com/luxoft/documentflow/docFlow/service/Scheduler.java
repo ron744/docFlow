@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.locks.ReentrantLock;
 
 @Service
 public class Scheduler {
@@ -19,11 +20,10 @@ public class Scheduler {
     private final StateService stateService;
 
     private final ArrayBlockingQueue<Document> documents = new ArrayBlockingQueue<>(20000);
-//    private Map<Long, List<Document>> documentByWorkflowId = new ConcurrentHashMap<>();
-    private List<DocumentStack> documentByWorkflowId = new LinkedList<>();
+    private final ArrayBlockingQueue<DocumentStack> documentStackForWork = new ArrayBlockingQueue<>(20000);
+    private DocumentStack documentStack = null;
 
     private final Object monitor1 = new Object();
-    private final Object monitor2 = new Object();
 
     @Autowired
     public Scheduler(DocumentService documentService, DocumentServiceCrud documentServiceCrud, WorkflowServiceCrud workflowServiceCrud, StateService stateService) {
@@ -36,22 +36,15 @@ public class Scheduler {
             Thread th = new Thread(() -> {
                 while (!Thread.currentThread().isInterrupted()) {
                     try {
-                        if (documentByWorkflowId.size() > 1) {
+                        List<Document> documentList = documentStackForWork.take().getDocuments();
 
-                            synchronized (monitor2) {
-                                List<Workflow> workflowList = stateService.processing(documentByWorkflowId.get(0).getDocuments());
+                        List<Workflow> workflowList = stateService.processing(documentList);
 
-                                for (Workflow workflow : workflowList) {
-                                    System.out.println(workflow.toString());
-                                }
-
-                                documentByWorkflowId.remove(0);
-
-                                workflowServiceCrud.addAll(workflowList);
-                            }
-
+                        if (workflowList.size() > 0) {
+                            workflowServiceCrud.add(workflowList.get(0));
                         }
-                    } catch (Exception e) {
+
+                    } catch (InterruptedException e) {
                         Thread.currentThread().interrupt();
                     }
                 }
@@ -83,38 +76,30 @@ public class Scheduler {
     }
 
     private void addDocToDocumentByWorkflowId(Document doc) {
-        List<Document> documentList = new ArrayList<>();
         Long workflowId = doc.getWorkflowId();
-
-        boolean documentStackChanged = false;
 
         synchronized (monitor1) {
 
-            for (int i = 0; i < documentByWorkflowId.size(); i++) {
-                DocumentStack documentStack = documentByWorkflowId.get(i);
+            if (documentStack == null || !documentStack.getWorkflowId().equals(workflowId)) {
 
-                if (documentStack.getWorkflowId().equals(workflowId)) {
-                    documentList = documentStack.getDocuments();
-                    documentStack.setDocuments(documentList);
-                    documentByWorkflowId.set(i, documentStack);
-                    documentStackChanged = true;
-                    break;
+                System.out.println("documentStack 1: " + documentStack);
+                if (documentStack != null) {
+                    documentStackForWork.add(documentStack);
                 }
+
+                documentStack = new DocumentStack(workflowId, new ArrayList<>());
             }
 
-            if (!documentStackChanged) {
-                documentList.add(doc);
-                documentByWorkflowId.add(new DocumentStack(workflowId, documentList));
-            }
-
+            documentStack.getDocuments().add(doc);
+            System.out.println("documentStack 2: " + documentStack);
         }
+
     }
 
 
-
-    @Scheduled(fixedDelay = 30000)
+    @Scheduled(fixedDelay = 7000)
     public void generateRandomDocument() {
-        int countId = 3;
+        int countId = 1;
         List<Document> documentList = documentService.addRandomDocument(countId);
         documents.addAll(documentList);
     }

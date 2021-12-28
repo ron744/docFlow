@@ -21,6 +21,7 @@ public class WorkflowServiceCrud {
     }
 
     public Workflow add(Workflow workflow) {
+//        System.out.println("add workflow: " + workflow.toString());
         return repository.save(workflow);
     }
 
