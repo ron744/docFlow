@@ -7,17 +7,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.locks.ReentrantLock;
 
 @Service
 public class Scheduler {
 
     private final DocumentService documentService;
-    private final DocumentServiceCrud documentServiceCrud;
-    private final WorkflowServiceCrud workflowServiceCrud;
-    private final StateService stateService;
 
     private final ArrayBlockingQueue<Document> documents = new ArrayBlockingQueue<>(20000);
     private final ArrayBlockingQueue<DocumentStack> documentStackForWork = new ArrayBlockingQueue<>(20000);
@@ -28,20 +25,20 @@ public class Scheduler {
     @Autowired
     public Scheduler(DocumentService documentService, DocumentServiceCrud documentServiceCrud, WorkflowServiceCrud workflowServiceCrud, StateService stateService) {
         this.documentService = documentService;
-        this.documentServiceCrud = documentServiceCrud;
-        this.workflowServiceCrud = workflowServiceCrud;
-        this.stateService = stateService;
 
         for (int i = 0; i < 3; i++) {
             Thread th = new Thread(() -> {
                 while (!Thread.currentThread().isInterrupted()) {
                     try {
+
                         List<Document> documentList = documentStackForWork.take().getDocuments();
 
-                        List<Workflow> workflowList = stateService.processing(documentList);
+                        if (documentList.size() > 0) {
+                            List<Workflow> workflowList = stateService.processing(documentList);
 
-                        if (workflowList.size() > 0) {
-                            workflowServiceCrud.add(workflowList.get(0));
+                            if (workflowList.size() > 0) {
+                                workflowServiceCrud.add(workflowList.get(0));
+                            }
                         }
 
                     } catch (InterruptedException e) {
@@ -76,13 +73,12 @@ public class Scheduler {
     }
 
     private void addDocToDocumentByWorkflowId(Document doc) {
-        Long workflowId = doc.getWorkflowId();
 
         synchronized (monitor1) {
+            Long workflowId = doc.getWorkflowId();
 
             if (documentStack == null || !documentStack.getWorkflowId().equals(workflowId)) {
 
-                System.out.println("documentStack 1: " + documentStack);
                 if (documentStack != null) {
                     documentStackForWork.add(documentStack);
                 }
@@ -91,15 +87,14 @@ public class Scheduler {
             }
 
             documentStack.getDocuments().add(doc);
-            System.out.println("documentStack 2: " + documentStack);
         }
 
     }
 
 
-    @Scheduled(fixedDelay = 7000)
+    @Scheduled(fixedDelay = 300000)
     public void generateRandomDocument() {
-        int countId = 1;
+        int countId = 10;
         List<Document> documentList = documentService.addRandomDocument(countId);
         documents.addAll(documentList);
     }

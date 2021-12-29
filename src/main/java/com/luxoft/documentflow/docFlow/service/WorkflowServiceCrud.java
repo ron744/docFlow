@@ -21,7 +21,6 @@ public class WorkflowServiceCrud {
     }
 
     public Workflow add(Workflow workflow) {
-//        System.out.println("add workflow: " + workflow.toString());
         return repository.save(workflow);
     }
 
@@ -39,6 +38,6 @@ public class WorkflowServiceCrud {
             return workflowOptional.get();
         }
 
-        throw new NoSuchElementException();
+        return null;
     }
 }

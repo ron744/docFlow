@@ -28,11 +28,6 @@ public class StateService {
         Map<Long, Collection<DocType>> workflowDocumentTypesMap = new HashMap<>();
         Map<Long, Workflow> workflowMap = new HashMap<>();
 
-        for (Document document : documentList) {
-            System.out.println(document.toString());
-        }
-        System.out.println("----------part of documents----------");
-
         for (Document doc : documentList) {
             Long workflowId = doc.getWorkflowId();
 
@@ -42,7 +37,7 @@ public class StateService {
                 if (workflow != null) {
                     workflowMap.put(workflowId, workflow);
                 } else {
-                    workflowMap.put(workflowId, new Workflow(workflowId, doc.getName(), null));
+                    workflowMap.put(workflowId, new Workflow(workflowId, doc.getName(), WorkflowState.NEW));
                 }
 
             }

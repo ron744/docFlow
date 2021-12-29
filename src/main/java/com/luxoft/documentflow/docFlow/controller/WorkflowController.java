@@ -18,13 +18,11 @@ public class WorkflowController {
 
     private final WorkflowServiceCrud workflowServiceCrud;
     private final StateService stateService;
-    private final Scheduler scheduler;
 
     @Autowired
-    public WorkflowController(WorkflowServiceCrud workflowServiceCrud, StateService stateService, Scheduler scheduler) {
+    public WorkflowController(WorkflowServiceCrud workflowServiceCrud, StateService stateService) {
         this.workflowServiceCrud = workflowServiceCrud;
         this.stateService = stateService;
-        this.scheduler = scheduler;
     }
 
     @GetMapping(value = "/test")
@@ -49,7 +47,12 @@ public class WorkflowController {
 
     @GetMapping(value = "/getById")
     public ResponseEntity<Workflow> getById(@RequestParam Long id) {
-        return ResponseEntity.ok(workflowServiceCrud.findWorkflowById(id));
+        Workflow workflow = workflowServiceCrud.findWorkflowById(id);
+        if (workflow != null) {
+            return ResponseEntity.ok(workflowServiceCrud.findWorkflowById(id));
+        }
+
+        return ResponseEntity.status(500).body(new Workflow());
     }
 
     @PostMapping(value = "/add")
