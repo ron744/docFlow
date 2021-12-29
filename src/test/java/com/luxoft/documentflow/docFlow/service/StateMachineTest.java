@@ -52,4 +52,15 @@ public class StateMachineTest {
 
         Assertions.assertEquals(expectedState, actualState);
     }
+
+    @Test
+    public void changeStateNullPointerException() {
+        List<DocType> docTypeList = Arrays.asList(DocType.signing_of_the_primary_document_from_the_recipient,
+                DocType.notification_of_receipt_of_the_signature_from_the_sender,
+                DocType.notification_of_receipt_of_the_notification_of_receipt_of_the_signature_from_the_sender,
+                DocType.signing_of_the_primary_document_from_the_recipient,
+                DocType.notification_of_receipt_of_the_signature_from_the_sender);
+
+        Assertions.assertThrows(NullPointerException.class, () -> new StateMachine().changeState(docTypeList, null));
+    }
 }

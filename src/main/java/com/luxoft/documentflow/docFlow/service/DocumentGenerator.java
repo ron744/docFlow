@@ -2,11 +2,18 @@ package com.luxoft.documentflow.docFlow.service;
 
 import com.luxoft.documentflow.docFlow.model.DocType;
 import com.luxoft.documentflow.docFlow.model.Document;
+import com.luxoft.documentflow.docFlow.model.DocumentFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
+import org.springframework.stereotype.Component;
 
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
+@Component
 public class DocumentGenerator {
+    @Autowired
+    AutowireCapableBeanFactory beanFactory;
 
     public List<Document> generate(int workflowId) {
         List<Document> documents = new ArrayList<>();
@@ -21,6 +28,12 @@ public class DocumentGenerator {
 
             documents.add(primaryDocument);
         }
+
+        for (Document document : documents) {
+            System.out.println(document.toString());
+        }
+
+        System.out.println("----------document generation is finished----------");
 
         return documents;
     }
@@ -37,6 +50,13 @@ public class DocumentGenerator {
         int docTypeNumber = ThreadLocalRandom.current().nextInt(0, DocType.values().length);
         DocType docType = DocType.values()[docTypeNumber];
 
-        return new Document(randomId, name, workflowId, docType, false);
+        Document document = null;
+        try {
+            document = new DocumentFactory(randomId, name, workflowId, docType, false).getObject();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return document;
     }
 }

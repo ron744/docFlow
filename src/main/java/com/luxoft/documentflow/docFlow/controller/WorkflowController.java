@@ -1,6 +1,7 @@
 package com.luxoft.documentflow.docFlow.controller;
 
 import com.luxoft.documentflow.docFlow.model.Workflow;
+import com.luxoft.documentflow.docFlow.service.Scheduler;
 import com.luxoft.documentflow.docFlow.service.StateService;
 import com.luxoft.documentflow.docFlow.service.WorkflowServiceCrud;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,7 +47,12 @@ public class WorkflowController {
 
     @GetMapping(value = "/getById")
     public ResponseEntity<Workflow> getById(@RequestParam Long id) {
-        return ResponseEntity.ok(workflowServiceCrud.findWorkflowById(id));
+        Workflow workflow = workflowServiceCrud.findWorkflowById(id);
+        if (workflow != null) {
+            return ResponseEntity.ok(workflowServiceCrud.findWorkflowById(id));
+        }
+
+        return ResponseEntity.status(500).body(new Workflow());
     }
 
     @PostMapping(value = "/add")

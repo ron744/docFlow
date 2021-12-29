@@ -38,6 +38,6 @@ public class WorkflowServiceCrud {
             return workflowOptional.get();
         }
 
-        throw new NoSuchElementException();
+        return null;
     }
 }
